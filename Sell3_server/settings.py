@@ -168,3 +168,6 @@ LOGGING = {
         },
     }
 }
+#cookie 信息
+COOKIES={'cookie':''}
+

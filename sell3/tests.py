@@ -6,9 +6,11 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 import urllib
-import urllib2
+import urllib2,json
 
 from django.test import TestCase
+import Sell3_server
+from Sell3_server.settings import COOKIES
 
 
 class SimpleTest(TestCase):
@@ -47,30 +49,39 @@ class SimpleTest(TestCase):
 # decrypted = unpad(cipher.decrypt(result2))
 # print decrypted  # will be 'to be encrypted'
 
-def v(session,data):
+def v(data):
     request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/identity/verifyIdentity',data)
-    request.add_header('Cookie', session)
+    request.add_header('Cookie', COOKIES.get('cookie',''))
     try:
         response = urllib2.urlopen(request)
-        print response.read()
+        result= response.read()
+        print result
+        r=json.loads(result)
+        if  r.get('success')=='false':
+            if r.get('msg',{}).get('code',0)=='300':
+                loginS()
+                v(data)
+
+
     except Exception,e:
         print e
 
 
 
-def save(session,data):
+def save(data):
     request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/identity/saveIdentity',data)
-    request.add_header('Cookie', session)
+    request.add_header('Cookie', COOKIES.get('cookie',''))
     try:
         response = urllib2.urlopen(request)
-        print response.read()
+        result= response.read()
+        print result
+
+
     except Exception,e:
         print e
 
 
-
-
-def tellogin():
+def loginS():
     request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/sys/login?u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV')
     # data = urllib.urlencode({"u":"nSI_iRcroMByplRNkQvKQERZyytPmW", "p":"B%40WDCCCTT7wKNW5XlvV1slp38YmuCV"})
     response = urllib2.urlopen(request)
@@ -78,12 +89,16 @@ def tellogin():
     cookies = response.headers["Set-cookie"]
 
     cookie = cookies[cookies.index("JSESSIONID"):]
-    session = cookie[:cookie.index(";")+1]
+    COOKIES['cookie'] = cookie[:cookie.index(";")+1]
+
+
+def tellogin():
+
     datalist=[{'phone':'15901304635','name':'王伟','number':'152822198710226315'}]
     for dm in datalist:
         data=urllib.urlencode(dm)
         print data
-        v(session,data)
+        v(data)
         ap={'phone':dm['phone'],'name':dm['name'],'number':dm['number']}
         ap['birth']=dm['number'][6:14]
         ap['ethnic']=''
@@ -96,7 +111,7 @@ def tellogin():
         ap['cred_type']='0'
         data2=urllib.urlencode(ap)
         print data2
-        save(session,data2)
+        save(data2)
 
 tellogin()
 def urlparm():
