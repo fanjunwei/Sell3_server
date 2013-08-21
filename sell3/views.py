@@ -1,5 +1,7 @@
 #coding=utf-8
 # Create your views here.
+import urllib
+import urllib2
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm

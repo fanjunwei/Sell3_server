@@ -1,3 +1,4 @@
+#coding=utf-8
 # Django settings for Sell3_server project.
 import os
 os.environ['LANG'] = 'en_US.UTF-8'
