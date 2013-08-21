@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from Sell3_server.settings import COOKIES
+from sell3.models import Truename
 from sell3.tools import getResult
 from django.contrib.auth import  login as auth_login
 from sell3.usernames import USERNAMES
@@ -123,6 +124,15 @@ def save(ap):
             else:
                 return {'success':False,'msg':{"desc":r.get('msg',{}).get('desc',u'账号异常，请联系管理员')}}
         else:
+            try:
+                order=Truename()
+                order.tel=ap.get('phone',None)
+                order.name=ap.get('name',None)
+                order.number=ap.get('number',None)
+                order.address=ap.get('address',None)
+                order.save()
+            except:
+                pass
             return {'success':True,'msg':{"desc":u'实名制认证成功'}}
 
 
