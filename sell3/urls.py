@@ -5,7 +5,7 @@ Created on 2011-3-19
 @author: 王健
 '''
 from django.conf.urls import patterns
-from sell3.views import top, menu, welcome, clientLogin, teltruename, checkteltruename, saveteltruename, getExcelPage, uploadExcel
+from sell3.views import top, menu, welcome, clientLogin, teltruename, checkteltruename, saveteltruename, getExcelPage, uploadExcel, androidCheck, androidSave
 from sell3.views_user import check_username, userAdd, userSave, userDelete, userOpen, userPassword, userDeviceid, userList, userListPage
 
 
@@ -18,6 +18,8 @@ urlpatterns = patterns('^oa/$',
                         (r'^saveteltruename/$',saveteltruename),
                         (r'^getExcelPage/$',getExcelPage),
                         (r'^uploadExcel/$',uploadExcel),
+                        (r'^androidCheck/$',androidCheck),
+                        (r'^androidSave/$',androidSave),
 
                         (r'^clientLogin/$',clientLogin),
                         (r'^check_username/$',check_username),
