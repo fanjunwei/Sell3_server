@@ -23,6 +23,7 @@ class Truename(models.Model):
     number = models.CharField(max_length=18,verbose_name=u'身份证号',help_text=u'身份证号')
     address = models.CharField(max_length=30,verbose_name=u'地址',help_text=u'居住地址')
     datetime = models.DateTimeField(default=datetime.now(),verbose_name=u'默认时间')
+    user = models.ForeignKey(User,null=True,blank=True,verbose_name=u'提交账号',help_text=u'操作人')
 
     def __unicode__(self):
         return u'%s_%s_%s'%(self.tel,self.name,self.number)

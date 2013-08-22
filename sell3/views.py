@@ -1,5 +1,7 @@
 #coding=utf-8
 # Create your views here.
+import os
+import shutil
 import urllib
 import urllib2
 import json
@@ -9,9 +11,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from Sell3_server.settings import COOKIES
+from Sell3_server.settings import COOKIES, MEDIA_ROOT
 from sell3.models import Truename
-from sell3.tools import getResult
+from sell3.tools import getResult, client_login_required
 from django.contrib.auth import  login as auth_login
 from sell3.usernames import USERNAMES
 
@@ -168,8 +170,7 @@ def loginS():
 #                 return result
         # ap={'phone':dm['phone'],'name':dm['name'],'number':dm['number']}
 
-
-def teltruename(request):
+def getParam(request):
     tel=request.REQUEST.get('tel','')
     name=request.REQUEST.get('name','')
     number=request.REQUEST.get('number','')
@@ -183,6 +184,12 @@ def teltruename(request):
     if not address:
         return HttpResponse(u'请提供地址')
     ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
+    return ap
+
+def teltruename(request):
+    ap=getParam(request)
+    if  isinstance(ap,HttpResponse):
+        return ap
     result=v(ap,False)
     if not result.get('success'):
         return HttpResponse(result.get('msg',{}).get('desc',u''))
@@ -198,19 +205,9 @@ def teltruename(request):
 
 
 def checkteltruename(request):
-    tel=request.REQUEST.get('tel','')
-    name=request.REQUEST.get('name','')
-    number=request.REQUEST.get('number','')
-    address=request.REQUEST.get('address','')
-    if not tel:
-        return HttpResponse(u'请提供手机号码')
-    if not name:
-        return HttpResponse(u'请提供姓名')
-    if not number:
-        return HttpResponse(u'请提供身份证号')
-    if not address:
-        return HttpResponse(u'请提供地址')
-    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
+    ap=getParam(request)
+    if  isinstance(ap,HttpResponse):
+        return ap
     result=v(ap,False)
     return HttpResponse(result.get('msg',{}).get('desc'))
     # if not result.get('success'):
@@ -220,25 +217,54 @@ def checkteltruename(request):
     #     return r.get('msg',{}).get('desc')
 
 def saveteltruename(request):
-    tel=request.REQUEST.get('tel','')
-    name=request.REQUEST.get('name','')
-    number=request.REQUEST.get('number','')
-    address=request.REQUEST.get('address','')
-    if not tel:
-        return HttpResponse(u'请提供手机号码')
-    if not name:
-        return HttpResponse(u'请提供姓名')
-    if not number:
-        return HttpResponse(u'请提供身份证号')
-    if not address:
-        return HttpResponse(u'请提供地址')
-    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
+    ap=getParam(request)
+    if  isinstance(ap,HttpResponse):
+        return ap
     r=save(ap)
     return HttpResponse(r.get('msg',{}).get('desc'))
-    # result=v(ap,False)
-    # if not result.get('success'):
-    #     return result.get('msg',{}).get('desc',u'')
-    # else:
-    #     r=save(ap)
-    #     return r.get('msg',{}).get('desc')
 
+@client_login_required
+def androidCheck(request):
+    ap=getParam(request)
+    if  isinstance(ap,HttpResponse):
+        return getResult(False,ap.content,None)
+    result=v(ap,True)
+    return getResult(result.get('success'),result.get('msg',{}).get('desc',u''),result)
+
+@client_login_required
+def androidSave(request):
+    ap=getParam(request)
+    if  isinstance(ap,HttpResponse):
+        return getResult(False,ap.content,None)
+    result=save(ap,True)
+    return getResult(result.get('success'),result.get('msg',{}).get('desc',u''),result)
+
+
+
+@login_required
+def getExcelPage(request):
+    return render_to_response('oa/excelUpload.html',RequestContext(request))
+
+
+@login_required
+def uploadExcel(request):
+    import xlrd
+    newfilename='%s.xls'%request.user.pk
+    try:
+        f=request.FILES['excel']
+        fileatt=open(MEDIA_ROOT+newfilename,'wb+')
+        for chunk in f.chunks():
+            fileatt.write(chunk)
+        fileatt.close()
+        book = xlrd.open_workbook(MEDIA_ROOT+newfilename)
+        sheet=book.sheet_by_name(book.sheet_names()[0])
+        rownum=sheet.nrows
+        namedict={}
+        for i in range(1,rownum):
+            row_data = sheet.row_values(i,1,2)
+            print row_data
+        return HttpResponse(u'成功')
+    except:
+        pass
+    finally:
+       os.remove(MEDIA_ROOT+newfilename)
