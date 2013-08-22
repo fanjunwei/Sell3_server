@@ -70,7 +70,7 @@ def v(ap,flag=False):
         if  r.get('success')=='false':
             if r.get('msg',{}).get('code',0)=='300':
                 if loginS():
-                    return v(data)
+                    return v(ap,flag)
                 else:
                     return {'success':False,'msg':{"desc":u'账号异常，请联系管理员'}}
             else:
@@ -182,13 +182,13 @@ def teltruename(request):
         return HttpResponse(u'请提供身份证号')
     if not address:
         return HttpResponse(u'请提供地址')
-    ap={'name':name,'number':number,'phone':tel,'address':address}
+    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
     result=v(ap,False)
     if not result.get('success'):
-        return result.get('msg',{}).get('desc',u'')
+        return HttpResponse(result.get('msg',{}).get('desc',u''))
     else:
         r=save(ap)
-        return r.get('msg',{}).get('desc')
+        return HttpResponse(r.get('msg',{}).get('desc'))
 
 
         # if not r.get('success'):
@@ -210,9 +210,9 @@ def checkteltruename(request):
         return HttpResponse(u'请提供身份证号')
     if not address:
         return HttpResponse(u'请提供地址')
-    ap={'name':name,'number':number,'phone':tel,'address':address}
+    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
     result=v(ap,False)
-    return result.get('msg',{}).get('desc')
+    return HttpResponse(result.get('msg',{}).get('desc'))
     # if not result.get('success'):
     #     return result.get('msg',{}).get('desc',u'')
     # else:
@@ -232,9 +232,9 @@ def saveteltruename(request):
         return HttpResponse(u'请提供身份证号')
     if not address:
         return HttpResponse(u'请提供地址')
-    ap={'name':name,'number':number,'phone':tel,'address':address}
+    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
     r=save(ap)
-    return r.get('msg',{}).get('desc')
+    return HttpResponse(r.get('msg',{}).get('desc'))
     # result=v(ap,False)
     # if not result.get('success'):
     #     return result.get('msg',{}).get('desc',u'')
