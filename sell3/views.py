@@ -183,7 +183,7 @@ def getParam(request):
         return HttpResponse(u'请提供身份证号')
     if not address:
         return HttpResponse(u'请提供地址')
-    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk')}
+    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk'),'res':u'手机号:%s\n姓名:%s\n身份证号:%s\n地址:%s'}
     return ap
 
 def teltruename(request):
@@ -192,10 +192,10 @@ def teltruename(request):
         return ap
     result=v(ap,False)
     if not result.get('success'):
-        return HttpResponse(result.get('msg',{}).get('desc',u''))
+        return HttpResponse(ap.get('res',u'')+result.get('msg',{}).get('desc',u''))
     else:
         r=save(ap)
-        return HttpResponse(r.get('msg',{}).get('desc'))
+        return HttpResponse(ap.get('res',u'')+r.get('msg',{}).get('desc'))
 
 
         # if not r.get('success'):
@@ -209,7 +209,7 @@ def checkteltruename(request):
     if  isinstance(ap,HttpResponse):
         return ap
     result=v(ap,False)
-    return HttpResponse(result.get('msg',{}).get('desc'))
+    return HttpResponse(ap.get('res',u'')+result.get('msg',{}).get('desc'))
     # if not result.get('success'):
     #     return result.get('msg',{}).get('desc',u'')
     # else:
@@ -221,14 +221,14 @@ def saveteltruename(request):
     if  isinstance(ap,HttpResponse):
         return ap
     r=save(ap)
-    return HttpResponse(r.get('msg',{}).get('desc'))
+    return HttpResponse(ap.get('res',u'')+r.get('msg',{}).get('desc'))
 
 @client_login_required
 def androidCheck(request):
     ap=getParam(request)
     if  isinstance(ap,HttpResponse):
         return getResult(False,ap.content,None)
-    result=v(ap,True)
+    result=v(ap,False)
     return getResult(result.get('success'),result.get('msg',{}).get('desc',u''),result)
 
 @client_login_required
