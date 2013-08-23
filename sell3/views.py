@@ -183,7 +183,7 @@ def getParam(request):
         return HttpResponse(u'请提供身份证号')
     if not address:
         return HttpResponse(u'请提供地址')
-    ap={'name':name.encode('gbk'),'number':number,'phone':tel,'address':address.encode('gbk'),'res':u'手机号:%s\n姓名:%s\n身份证号:%s\n地址:%s'%(tel,name,number,address)}
+    ap={'name':name.encode('utf-8'),'number':number,'phone':tel,'address':address.encode('utf-8'),'res':u'手机号:%s\n姓名:%s\n身份证号:%s\n地址:%s\n'%(tel,name,number,address)}
     return ap
 
 def teltruename(request):

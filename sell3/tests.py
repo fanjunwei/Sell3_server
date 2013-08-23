@@ -94,7 +94,7 @@ def loginS():
 
 def tellogin():
 
-    datalist=[{'phone':'15901304635','name':'王伟','number':'152822198710226315'}]
+    datalist=[{'phone':'15901304543','name':'王伟','number':'152822198710226315'}]
     for dm in datalist:
         data=urllib.urlencode(dm)
         print data
