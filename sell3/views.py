@@ -236,7 +236,7 @@ def androidSave(request):
     ap=getParam(request)
     if  isinstance(ap,HttpResponse):
         return getResult(False,ap.content,None)
-    result=save(ap,True)
+    result=save(ap)
     return getResult(result.get('success'),result.get('msg',{}).get('desc',u''),result)
 
 
