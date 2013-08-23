@@ -232,6 +232,7 @@ def saveteltruename(request):
 @client_login_required
 def androidCheck(request):
     ap=getParam(request)
+    del ap['res']
     if  isinstance(ap,HttpResponse):
         return getResult(False,ap.content,None)
     result=v(ap,False)
@@ -240,6 +241,7 @@ def androidCheck(request):
 @client_login_required
 def androidSave(request):
     ap=getParam(request)
+    del ap['res']
     if  isinstance(ap,HttpResponse):
         return getResult(False,ap.content,None)
     result=save(ap)
