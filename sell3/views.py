@@ -8,6 +8,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.db.transaction import autocommit
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -89,7 +90,7 @@ def v(ap,flag=False):
 
 
 
-def save(ap):
+def save(ap,user=None):
     if len(ap['number'])==18:
         ap['birth']=ap['number'][6:14]
         sex=int(ap['number'][-2:-1])
@@ -132,6 +133,9 @@ def save(ap):
                 order.name=ap.get('name',None)
                 order.number=ap.get('number',None)
                 order.address=ap.get('address',None)
+                order.company='yidong'
+                order.user=user
+                order.status=1
                 order.save()
             except:
                 pass
@@ -267,12 +271,45 @@ def uploadExcel(request):
         book = xlrd.open_workbook(MEDIA_ROOT+newfilename)
         sheet=book.sheet_by_name(book.sheet_names()[0])
         rownum=sheet.nrows
-        namedict={}
-        for i in range(1,rownum):
+        # namedict={}
+        for i in range(0,rownum):
             row_data = sheet.row_values(i,1,2)
-            print row_data
+            if row_data[0] and row_data[1] and row_data[2] and row_data[3]:
+                order=Truename()
+                order.tel=row_data[0]
+                order.name=row_data[1]
+                order.number=row_data[2]
+                order.address=row_data[3]
+                order.user=request.user
+                order.status=0
+                order.company='yidong'
+                order.save()
+            # print row_data
         return HttpResponse(u'成功')
     except:
         pass
     finally:
        os.remove(MEDIA_ROOT+newfilename)
+
+@login_required
+@autocommit
+def autoSaveTel(request):
+    '''
+    自动实名认证
+    '''
+    num=0
+    for o in Truename.objects.filter(status=0).order_by('datetime'):
+        if 'yidong'==o.company:
+            ap={'tel':o.tel,'name':o.name,'number':o.number,'address':o.address}
+            r=v(ap,False)
+            if r.get('success'):
+                r=save(ap,request.user)
+            if r.get('success'):
+                o.status=1
+            else:
+                o.status=2
+                o.help=r.get('msg',{}).get('desc',u'')
+            o.save()
+            num+=1
+
+
