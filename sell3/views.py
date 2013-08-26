@@ -90,7 +90,7 @@ def v(ap,flag=False):
 
 
 
-def save(ap,user=None):
+def save(ap,user=None,o=None):
     if len(ap['number'])==18:
         ap['birth']=ap['number'][6:14]
         sex=int(ap['number'][-2:-1])
@@ -128,15 +128,16 @@ def save(ap,user=None):
                 return {'success':False,'msg':{"desc":r.get('msg',{}).get('desc',u'账号异常，请联系管理员')}}
         else:
             try:
-                order=Truename()
-                order.tel=ap.get('phone',None)
-                order.name=ap.get('name',None)
-                order.number=ap.get('number',None)
-                order.address=ap.get('address',None)
-                order.company='yidong'
-                order.user=user
-                order.status=1
-                order.save()
+                if o==None:
+                    order=Truename()
+                    order.tel=ap.get('phone',None)
+                    order.name=ap.get('name',None)
+                    order.number=ap.get('number',None)
+                    order.address=ap.get('address',None)
+                    order.company='yidong'
+                    order.user=user
+                    order.status=1
+                    order.save()
             except:
                 pass
             return {'success':True,'msg':{"desc":u'实名制认证成功'}}
@@ -272,10 +273,17 @@ def uploadExcel(request):
         sheet=book.sheet_by_name(book.sheet_names()[0])
         rownum=sheet.nrows
         # namedict={}
+        faile=[]
+        retel=[]
         for i in range(0,rownum):
             row_data = sheet.row_values(i,1,2)
             if row_data[0] and row_data[1] and row_data[2] and row_data[3]:
-                order=Truename()
+                try:
+                    order=Truename.objects.get(tel=row_data[0])
+                except:
+                    order=None
+                if order==None:
+                    order=Truename()
                 order.tel=row_data[0]
                 order.name=row_data[1]
                 order.number=row_data[2]
@@ -284,8 +292,18 @@ def uploadExcel(request):
                 order.status=0
                 order.company='yidong'
                 order.save()
+
+            else:
+                faile.append(i+1)
             # print row_data
-        return HttpResponse(u'成功')
+        msg=u''
+        if faile:
+            msg+=u'第%s行数据不完整，无法进行实名制。'%(u'、'.join(faile),)
+        if retel:
+            msg+=u'<br/>第%s行,电话号码已经存在，无法进行实名制。'%(u'、'.join(retel),)
+        if not msg:
+            msg=u'上传成功。'
+        return render_to_response('oa/excelUpload.html',RequestContext(request,{'msg':msg}))
     except:
         pass
     finally:
@@ -298,12 +316,12 @@ def autoSaveTel(request):
     自动实名认证
     '''
     num=0
-    for o in Truename.objects.filter(status=0).order_by('datetime'):
+    for o in Truename.objects.filter(status=0).order_by('datetime')[:10]:
         if 'yidong'==o.company:
             ap={'tel':o.tel,'name':o.name,'number':o.number,'address':o.address}
             r=v(ap,False)
             if r.get('success'):
-                r=save(ap,request.user)
+                r=save(ap,request.user,o)
             if r.get('success'):
                 o.status=1
             else:
@@ -311,5 +329,44 @@ def autoSaveTel(request):
                 o.help=r.get('msg',{}).get('desc',u'')
             o.save()
             num+=1
+    return render_to_response('truename.html',RequestContext(request,{'count':Truename.objects.filter(status=0).count()}))
 
+@login_required
+def downloadTrue(request):
+    response = HttpResponse(mimetype=u'application/ms-excel')
+    filename = u'错误实名制列表.xls'
+    response['Content-Disposition'] = (u'attachment;filename=%s' % filename).encode('utf-8')
+    import xlwt
+    from xlwt import Font, Alignment
 
+    style1 = xlwt.XFStyle()
+    font1 = Font()
+    font1.height = 250
+    font1.name = u'仿宋'
+    style1.font = font1
+    algn = Alignment()
+    algn.horz = Alignment.HORZ_LEFT
+    style1.alignment = algn
+    style1.font = font1
+
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet(u"错误实名制列表", cell_overwrite_ok=True)
+    rownum = 0
+    ws.write_merge(rownum, rownum, 0, 0, u'手机号', style1)
+    ws.write_merge(rownum, rownum, 1, 1, u'姓名', style1)
+    ws.write_merge(rownum, rownum, 2, 2, u'身份证号', style1)
+    ws.write_merge(rownum, rownum, 3, 3, u'地址', style1)
+    ws.write_merge(rownum, rownum, 4, 4, u'错误原因', style1)
+
+    rownum += 1
+    for o in Truename.objects.filter(status=2).order_by('datetime'):
+        ws.write_merge(rownum, rownum, 0, 0, o.tel, style1)
+        ws.write_merge(rownum, rownum, 1, 1,o.name , style1)
+        ws.write_merge(rownum, rownum, 2, 2,o.number, style1)
+        ws.write_merge(rownum, rownum, 3, 3, o.address, style1)
+        ws.write_merge(rownum, rownum, 4, 4, o.help, style1)
+
+        rownum += 1
+    for i in range(5):
+        ws.col(i).width = 256 * 20
+    wb.save(response)

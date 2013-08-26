@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head>
+{% ifnotequal count 0 %}
+    <META HTTP-EQUIV="Refresh" CONTENT="1">
+{% endifnotequal %}
+</head>
+<body>
+{% ifnotequal count 0 %}
+    还有{{ count }}条记录未有实名认证……
+    {% else %}
+    <a href="/oa/downloadTrue/">全部实名完成，导出所有不正确的实名记录</a>
+{% endifnotequal %}
+
+</table>
+</body>
+</html>
+
+
