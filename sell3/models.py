@@ -28,7 +28,7 @@ class Truename(models.Model):
     user = models.ForeignKey(User,null=True,blank=True,verbose_name=u'提交账号',help_text=u'操作人')
     status = models.IntegerField(default=0,verbose_name=u'实名状态',help_text=u'0:未实名，1:实名通过，2:实名未通过')
     help = models.CharField(max_length=100,null=True,blank=True,verbose_name=u'错误内容',help_text=u'实名不通过的错误信息')
-    company = models.CharField(default='yidong',choices=choice,null=True,blank=True,verbose_name=u'手机号公司',help_text=u'移动、联通')
+    company = models.CharField(max_length=10,default='yidong',choices=choice,null=True,blank=True,verbose_name=u'手机号公司',help_text=u'移动、联通')
 
     def __unicode__(self):
         return u'%s_%s_%s'%(self.tel,self.name,self.number)

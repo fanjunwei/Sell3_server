@@ -8,7 +8,11 @@
 {% ifnotequal count 0 %}
     还有{{ count }}条记录未有实名认证……
     {% else %}
-    <a href="/oa/downloadTrue/">全部实名完成，导出所有不正确的实名记录</a>
+    {% ifnotequal failcount 0 %}
+    <a href="/oa/downloadTrue/">全部实名完成，共有{{ failcount }}个失败实名信息，导出所有不正确的实名记录</a>
+        {% else %}
+        全部实名完成。
+    {% endifnotequal %}
 {% endifnotequal %}
 
 </table>

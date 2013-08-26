@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.db.transaction import autocommit
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from Sell3_server.settings import COOKIES, MEDIA_ROOT
@@ -276,15 +276,15 @@ def uploadExcel(request):
         faile=[]
         retel=[]
         for i in range(0,rownum):
-            row_data = sheet.row_values(i,1,2)
-            if row_data[0] and row_data[1] and row_data[2] and row_data[3]:
+            row_data = sheet.row_values(i,0,5)
+            if str(int(row_data[0])) and row_data[1] and row_data[2] and row_data[3]:
                 try:
-                    order=Truename.objects.get(tel=row_data[0])
+                    order=Truename.objects.get(tel=str(int(row_data[0])))
                 except:
                     order=None
                 if order==None:
                     order=Truename()
-                order.tel=row_data[0]
+                order.tel=str(int(row_data[0]))
                 order.name=row_data[1]
                 order.number=row_data[2]
                 order.address=row_data[3]
@@ -318,7 +318,7 @@ def autoSaveTel(request):
     num=0
     for o in Truename.objects.filter(status=0).order_by('datetime')[:10]:
         if 'yidong'==o.company:
-            ap={'tel':o.tel,'name':o.name,'number':o.number,'address':o.address}
+            ap={'phone':o.tel,'name':o.name.encode('utf-8'),'number':o.number,'address':o.address.encode('utf-8')}
             r=v(ap,False)
             if r.get('success'):
                 r=save(ap,request.user,o)
@@ -329,7 +329,15 @@ def autoSaveTel(request):
                 o.help=r.get('msg',{}).get('desc',u'')
             o.save()
             num+=1
-    return render_to_response('truename.html',RequestContext(request,{'count':Truename.objects.filter(status=0).count()}))
+    return render_to_response('oa/truename.html',RequestContext(request,{'count':Truename.objects.filter(status=0).count(),'failcount':Truename.objects.filter(status=2).count()}))
+
+@login_required
+def reUpload(request):
+    '''
+    重新实名制
+    '''
+    Truename.objects.filter(status=2).update(status=0)
+    return HttpResponseRedirect('/oa/getExcelPage/')
 
 @login_required
 def downloadTrue(request):
@@ -370,3 +378,4 @@ def downloadTrue(request):
     for i in range(5):
         ws.col(i).width = 256 * 20
     wb.save(response)
+    return response
