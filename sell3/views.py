@@ -379,3 +379,86 @@ def downloadTrue(request):
         ws.col(i).width = 256 * 20
     wb.save(response)
     return response
+
+def getpwd(s1,s2):
+    import subprocess
+    p = subprocess.Popen("java -jar /Users/wangjian2254/work/django/Sell3_server/test.jar %s %s"%(s1,s2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    r=[]
+    for line in p.stdout.readlines():
+        r.append(line)
+
+    p.wait()
+    return ''.join(r)
+
+    # ls=subprocess.call (["java -jar /Users/wangjian2254/work/django/Sell3_server/test.jar %s %s"%(s1,s2)],shell=True)
+    # return ls
+
+
+ltlogins='''
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body>
+<ns:mobileClientLogin>
+<deviceID>0000000000000000</deviceID>
+<communicaID>FFFF</communicaID>
+<sendSMSflag>1</sendSMSflag>
+<agentId>ADA658DD7BCD302965607BBFEE530EEC</agentId>
+<agentPasswd>1CB942CDE5E5D625</agentPasswd>
+<clientType>C310C73A81C69EAF</clientType>
+<versionCode>E07E985011131EFC</versionCode>
+<versionName>C6818C139D02F7B3</versionName>
+<lac></lac><ci></ci></ns:mobileClientLogin>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+'''
+'''
+<clientType>C310C73A81C69EAF</clientType>
+
+'''
+registerKey={'k':''}
+
+def ltlogin():
+    # from suds.client import Client
+    # client = Client('http://123.125.96.6:8090/wsdl')
+    # result = client.service.mobileClientLogin({'deviceID':'0000000000000000','communicaID':'FFFF','sendSMSflag':'1','agentId':'ADA658DD7BCD302965607BBFEE530EEC','agentPasswd':'1CB942CDE5E5D625','clientType':'C310C73A81C69EAF','versionCode':'E07E985011131EFC','versionName':'C6818C139D02F7B3','lac':'','ci':'',})
+    # print result
+    request = urllib2.Request('http://123.125.96.6:8090',' ')
+    try:
+        response = urllib2.urlopen(request,ltlogins.replace('\n',''))
+        result= response.read()
+        start=result.find('registerKey')
+        end=result.rfind('registerKey')
+        return result[start+12:end-2]
+    except Exception,e:
+        return ''
+
+ltcheck='''
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body><ns:checkTelphone>
+<deviceID>0000000000000000</deviceID>
+<communicaID>FFFF</communicaID>
+<agentId>%s</agentId>
+<telplone>%s</telplone>
+<versionCode>1.1</versionCode><versionName>1.0</versionName>
+<clientType>01</clientType></ns:checkTelphone>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+'''
+
+
+def ltv(tel,flag=False):
+    # data=urllib.urlencode(ap)
+    k=ltlogin()
+    agentid=getpwd('1103855807',k)
+    tel=getpwd(tel,k)
+    request = urllib2.Request('http://123.125.96.6:8090',' ')
+    try:
+        response = urllib2.urlopen(request,ltcheck.replace('\n','')%(agentid,tel))
+        result= response.read()
+        return result
+
+    except Exception,e:
+        return u'账号异常，请联系管理员'
+
+
+def ltcheckteltruename(request):
+    tel=tel=request.REQUEST.get('tel','')
+    result=ltv(tel,False)
+    return HttpResponse(result)

@@ -113,7 +113,7 @@ def tellogin():
         print data2
         save(data2)
 
-tellogin()
+# tellogin()
 def urlparm():
     s='birth=19871022&ethnic=&phone=18801191987&address=%E5%A4%A9%E6%B4%A5&name=%E7%8E%8B%E4%BC%9F&gender=0&number=152822198710226315&cred_type=0'
     pl=s.split('&')
@@ -129,3 +129,160 @@ gender 性别
 ethnic 民族
 cred_type 证件类型
 '''
+
+# from sell3.desstruct import *
+# from sell3.des import *
+
+# print desencode(u"1103855807".encode('gbk'),u"sunnada0".encode('gbk'))
+'''
+POST / HTTP/1.1
+Accept-Encoding: gzip
+User-Agent: Google-HTTP-Java-Client/1.15.0-rc (gzip)
+Content-Length: 687
+Host: 123.125.96.6:8090
+Connection: Keep-Alive
+
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body>
+<ns:mobileClientLogin>
+<deviceID>0000000000000000</deviceID>
+<communicaID>FFFF</communicaID>
+<sendSMSflag>1</sendSMSflag>
+<agentId>ADA658DD7BCD302965607BBFEE530EEC</agentId>
+<agentPasswd>1CB942CDE5E5D625</agentPasswd>
+<clientType>C310C73A81C69EAF</clientType>
+<versionCode>E07E985011131EFC</versionCode>
+<versionName>C6818C139D02F7B3</versionName>
+<lac></lac><ci></ci></ns:mobileClientLogin>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+HTTP/1.1 200 OK
+Server: gSOAP/2.8
+Content-Type: text/html; charset=utf-8
+Content-Length: 1261
+Connection: close
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<ns:mobileClientLoginResponse>
+<deviceID>0000000000000000</deviceID>
+<communicaID>0008</communicaID>
+<tradeState>0000</tradeState>
+<description></description>
+<clientType>C310C73A81C69EAF</clientType>
+<ftpSerIP>AFFE5F896C0681913945DA14011D48D9</ftpSerIP>
+<ftpSerPort>6700F97002B11734</ftpSerPort><
+ftpSerUser>CDDE001807AD12F9</ftpSerUser>
+<ftpSerPass>5F361207B50476322C3937D077060CE6</ftpSerPass>
+<upLoadPATH>F92878AC4CBAFABE</upLoadPATH>
+<upgradeFlag>37B91FE630E58597</upgradeFlag>
+<newVerCode>C6818C139D02F7B3</newVerCode>
+<newVerName>C6818C139D02F7B3</newVerName>
+<newVerLog>653F3A08787C48F1779F0C971315A58F279CE4368E4A1D1A</newVerLog>
+<upgradePATH>9C84E02B8AF9B213F44D56DF3262B059A9EE932880694779</upgradePATH>
+<registerKey>qwertyui</registerKey>
+<noticeFlag>0</noticeFlag>
+<noticeTitle></noticeTitle>
+<noticeMsg></noticeMsg>
+</ns:mobileClientLoginResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+lsp"aE@@1n{}`EO1/B
+ia
+
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body><ns:checkTelphone>
+<deviceID>0000000000000000</deviceID>
+<communicaID>FFFF</communicaID>
+<agentId>935CE99C05CE8E1DE04C47F38CAC04A6</agentId>
+<telplone>CB06BAB8BABE34A77D694B3577D94A22</telplone>
+<versionCode>1.1</versionCode><versionName>1.0</versionName>
+<clientType>01</clientType></ns:checkTelphone>
+</SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+HTTP/1.1 200 OK
+Server: gSOAP/2.8
+Content-Type: text/html; charset=utf-8
+Content-Length: 800
+Connection: close
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<ns:checkTelphoneResponse>
+<deviceID>0000000000000000</deviceID>
+<communicaID>0018</communicaID>
+<tradeState>0002</tradeState>
+<description>(25007)</description>
+<uploadType>2D7D4A5621BC7CC2</uploadType>
+<certifyFlag>1000000</certifyFlag>
+<noticeFlag>0</noticeFlag>
+<noticeTitle></noticeTitle>
+<noticeMsg></noticeMsg>
+</ns:checkTelphoneResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<ns:checkTelphoneResponse>
+<deviceID>0000000000000000</deviceID>
+<communicaID>0000</communicaID>
+<tradeState>0003</tradeState>
+<description>该号码已登记，不能重复登记，请勿销售。(序号：20015)</description>
+<uploadType>2D7D4A5621BC7CC2</uploadType>
+<certifyFlag>1000000</certifyFlag>
+<noticeFlag>0</noticeFlag>
+<noticeTitle></noticeTitle>
+<noticeMsg></noticeMsg>
+</ns:checkTelphoneResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<ns:mobileClientLoginResponse>
+<deviceID>0000000000000000</deviceID>
+<communicaID>0008</communicaID>
+<tradeState>0000</tradeState>
+<description></description>
+<clientType>C310C73A81C69EAF</clientType>
+<ftpSerIP>AFFE5F896C0681913945DA14011D48D9</ftpSerIP>
+<ftpSerPort>6700F97002B11734</ftpSerPort><
+ftpSerUser>CDDE001807AD12F9</ftpSerUser>
+<ftpSerPass>5F361207B50476322C3937D077060CE6</ftpSerPass>
+<upLoadPATH>F92878AC4CBAFABE</upLoadPATH>
+<upgradeFlag>37B91FE630E58597</upgradeFlag>
+<newVerCode>C6818C139D02F7B3</newVerCode>
+<newVerName>C6818C139D02F7B3</newVerName>
+<newVerLog>653F3A08787C48F1779F0C971315A58F279CE4368E4A1D1A</newVerLog>
+<upgradePATH>9C84E02B8AF9B213F44D56DF3262B059A9EE932880694779</upgradePATH>
+<registerKey>qwertyui</registerKey>
+<noticeFlag>0</noticeFlag>
+<noticeTitle></noticeTitle>
+<noticeMsg></noticeMsg>
+</ns:mobileClientLoginResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<ns:mobileClientLoginResponse>
+<deviceID>0000000000000000</deviceID>
+<communicaID>0000</communicaID>
+<tradeState>0000</tradeState>
+<description>成功</description>
+<clientType>C310C73A81C69EAF</clientType>
+<ftpSerIP></ftpSerIP><ftpSerPort></ftpSerPort>
+<ftpSerUser>CDDE001807AD12F9</ftpSerUser>
+<ftpSerPass>5F361207B50476322C3937D077060CE6</ftpSerPass>
+<upLoadPATH>F92878AC4CBAFABE</upLoadPATH>
+<upgradeFlag>37B91FE630E58597</upgradeFlag>
+<newVerCode>C310C73A81C69EAF</newVerCode>
+<newVerName>3C640A39BFD17905</newVerName>
+<newVerLog>653F3A08787C48F1779F0C971315A58F279CE4368E4A1D1A</newVerLog>
+<upgradePATH>A8A62F17C3155CFA00C685128DF33406F23E90344BCAEC60</upgradePATH>
+<registerKey>qwertyui</registerKey>
+<noticeFlag>0</noticeFlag>
+<noticeTitle></noticeTitle>
+<noticeMsg></noticeMsg>
+</ns:mobileClientLoginResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+'''
+
+import subprocess
+ls=subprocess.call (["java -jar /Users/wangjian2254/work/django/Sell3_server/test.jar 1103855807 sunnada0"],shell=True)
+print ls
+
+
