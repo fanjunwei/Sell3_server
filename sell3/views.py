@@ -16,7 +16,7 @@ from Sell3_server.settings import COOKIES, MEDIA_ROOT
 from sell3.models import Truename
 from sell3.tools import getResult, client_login_required
 from django.contrib.auth import  login as auth_login
-from sell3.usernames import USERNAMES
+from sell3.usernames import USERNAMES,LTKEY
 
 
 @login_required
@@ -382,7 +382,8 @@ def downloadTrue(request):
 
 def getpwd(s1,s2):
     import subprocess
-    p = subprocess.Popen("java -jar /Users/wangjian2254/work/django/Sell3_server/test.jar %s %s"%(s1,s2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    from Sell3_server.settings import DES_ROOT
+    p = subprocess.Popen("java -jar %s %s %s"%(DES_ROOT,s1,s2), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     r=[]
     for line in p.stdout.readlines():
         r.append(line)
@@ -401,7 +402,7 @@ ltlogins='''
 <deviceID>0000000000000000</deviceID>
 <communicaID>FFFF</communicaID>
 <sendSMSflag>1</sendSMSflag>
-<agentId>ADA658DD7BCD302965607BBFEE530EEC</agentId>
+<agentId>ADA658DD7BCD302965607BBFEE530EE</agentId>
 <agentPasswd>1CB942CDE5E5D625</agentPasswd>
 <clientType>C310C73A81C69EAF</clientType>
 <versionCode>E07E985011131EFC</versionCode>
@@ -424,6 +425,7 @@ def ltlogin():
     try:
         response = urllib2.urlopen(request,ltlogins.replace('\n',''))
         result= response.read()
+        print result
         start=result.find('registerKey')
         end=result.rfind('registerKey')
         return result[start+12:end-2]
@@ -431,34 +433,91 @@ def ltlogin():
         return ''
 
 ltcheck='''
-<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
-<SOAP-ENV:Body><ns:checkTelphone>
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body>
+<ns:checkTelphone>
 <deviceID>0000000000000000</deviceID>
 <communicaID>FFFF</communicaID>
-<agentId>%s</agentId>
+<agentId>935CE99C05CE8E1DE04C47F38CAC04A6</agentId>
 <telplone>%s</telplone>
-<versionCode>1.1</versionCode><versionName>1.0</versionName>
-<clientType>01</clientType></ns:checkTelphone>
-</SOAP-ENV:Body></SOAP-ENV:Envelope>
+<versionCode>1.1</versionCode>
+<versionName>1.0</versionName>
+<clientType>01</clientType>
+</ns:checkTelphone></SOAP-ENV:Body></SOAP-ENV:Envelope>
 '''
-
+#CB06BAB8BABE34A77D694B3577D94A22
 
 def ltv(tel,flag=False):
     # data=urllib.urlencode(ap)
-    k=ltlogin()
-    agentid=getpwd('1103855807',k)
-    tel=getpwd(tel,k)
+    # k=ltlogin()
+
+    # agentid=getpwd('1103855807',LTKEY)
+    tel=getpwd(tel,LTKEY)
     request = urllib2.Request('http://123.125.96.6:8090',' ')
     try:
-        response = urllib2.urlopen(request,ltcheck.replace('\n','')%(agentid,tel))
+        response = urllib2.urlopen(request,ltcheck.replace('\n','')%(tel,))
         result= response.read()
-        return result
+        tradeState_start=result.find('tradeState')
+        tradeState_end=result.rfind('tradeState')
+        tradeState=result[tradeState_start+11:tradeState_end-2]
+        description_start=result.find('description')
+        description_end=result.rfind('description')
+        description=result[description_start+len('description')+1:description_end-2]
+        if tradeState=='0000':
+            return {'success':True,'msg':u'手机号可可以出售'}
+        else:
+            return {'success':False,'msg':description.decode('utf-8')}
 
     except Exception,e:
-        return u'账号异常，请联系管理员'
+        return {'success':False,'msg':u'账号异常，请联系管理员'}
 
+ltuploadstr='''
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body>
+<ns:uploadCertificateInfo>
+<deviceID>0000000000000000</deviceID>
+<communicaID>006D</communicaID>
+<agentId>935CE99C05CE8E1DE04C47F38CAC04A6</agentId>
+<telplone>%s</telplone>
+<certificateName>%s</certificateName>
+<certificateType>8D1B6F7327986F7F</certificateType>
+<certificateNum>%s</certificateNum>
+<certificateAdd>%s</certificateAdd>
+<clientType>01</clientType>
+</ns:uploadCertificateInfo></SOAP-ENV:Body></SOAP-ENV:Envelope>
+'''
+
+
+def ltsave(ap,flag=False):
+    # data=urllib.urlencode(ap)
+    # k=ltlogin()
+
+    # agentid=getpwd('1103855807',LTKEY)
+    name=getpwd('name',LTKEY)
+    number=getpwd(ap.get('number'),LTKEY)
+    address=getpwd(ap.get('address'),LTKEY)
+    tel=getpwd(ap.get('tel'),LTKEY)
+    request = urllib2.Request('http://123.125.96.6:8090',' ')
+    try:
+        response = urllib2.urlopen(request,ltuploadstr.replace('\n','')%(tel,name,number,address))
+        result= response.read()
+        tradeState_start=result.find('tradeState')
+        tradeState_end=result.rfind('tradeState')
+        tradeState=result[tradeState_start+11:tradeState_end-2]
+        description_start=result.find('description')
+        description_end=result.rfind('description')
+        description=result[description_start+len('description')+1:description_end-2]
+        if tradeState=='0000':
+            return {'success':True,'msg':u'实名认证成功'}
+        else:
+            return {'success':False,'msg':description.decode('utf-8')}
+
+    except Exception,e:
+        return {'success':False,'msg':u'账号异常，请联系管理员'}
 
 def ltcheckteltruename(request):
-    tel=tel=request.REQUEST.get('tel','')
-    result=ltv(tel,False)
-    return HttpResponse(result)
+    ap=getParam(request)
+    res=ap.get('res',u'')
+    del ap['res']
+    if  isinstance(ap,HttpResponse):
+        return ap
+    result=ltv(ap.get('phone'),False)
+    return HttpResponse(res+result.get('msg'))

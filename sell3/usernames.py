@@ -6,3 +6,5 @@ __author__ = u'王健'
 
 
 USERNAMES='u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV'
+
+LTKEY='qwertyui'

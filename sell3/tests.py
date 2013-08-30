@@ -279,6 +279,25 @@ ftpSerUser>CDDE001807AD12F9</ftpSerUser>
 <noticeTitle></noticeTitle>
 <noticeMsg></noticeMsg>
 </ns:mobileClientLoginResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+
+POST / HTTP/1.1
+Accept-Encoding: gzip
+User-Agent: Google-HTTP-Java-Client/1.15.0-rc (gzip)
+Content-Length: 601
+Host: 123.125.96.6:8090
+Connection: Keep-Alive
+
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS"><SOAP-ENV:Body>
+<ns:checkTelphone>
+<deviceID>0000000000000000</deviceID>
+<communicaID>FFFF</communicaID>
+<agentId>935CE99C05CE8E1DE04C47F38CAC04A6</agentId>
+<telplone>CB06BAB8BABE34A77D694B3577D94A22</telplone>
+<versionCode>1.1</versionCode>
+<versionName>1.0</versionName>
+<clientType>01</clientType>
+</ns:checkTelphone></SOAP-ENV:Body></SOAP-ENV:Envelope>
 '''
 
 import subprocess
