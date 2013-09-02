@@ -6,6 +6,7 @@ import json
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 import math
+from Sell3_server.settings import DEVICEID
 
 
 __author__ = u'王健'
@@ -24,17 +25,18 @@ def client_login_required(func=None):
     def test(request, *args, **kwargs):
         if not isinstance(request.user,AnonymousUser):
             if  request.user.is_active:
-                deviceid=request.REQUEST.get('deviceid',None)
-                serverdeviceid=request.user.person.deviceid
-                if not serverdeviceid and deviceid:
-                    from sell3.models import Person
-                    if 0==Person.objects.filter(deviceid=deviceid).count():
-                        request.user.person.deviceid=deviceid
-                        request.user.person.save()
-                    else:
-                        return getResult(False,u'设备已经使用过了，请联系管理员消除设备指纹，或使用原来的账号登录。%s_%s'%(deviceid,serverdeviceid), None,404)
-                elif serverdeviceid and deviceid and deviceid!=serverdeviceid:
-                    return getResult(False,u'用户使用的设备与注册设备不一致，请使用注册的设备。%s_%s'%(deviceid,serverdeviceid), None,404)
+                if DEVICEID:
+                    deviceid=request.REQUEST.get('deviceid',None)
+                    serverdeviceid=request.user.person.deviceid
+                    if not serverdeviceid and deviceid:
+                        from sell3.models import Person
+                        if 0==Person.objects.filter(deviceid=deviceid).count():
+                            request.user.person.deviceid=deviceid
+                            request.user.person.save()
+                        else:
+                            return getResult(False,u'设备已经使用过了，请联系管理员消除设备指纹，或使用原来的账号登录。%s_%s'%(deviceid,serverdeviceid), None,404)
+                    elif serverdeviceid and deviceid and deviceid!=serverdeviceid:
+                        return getResult(False,u'用户使用的设备与注册设备不一致，请使用注册的设备。%s_%s'%(deviceid,serverdeviceid), None,404)
 
                 return func(request, *args, **kwargs)
             else:
