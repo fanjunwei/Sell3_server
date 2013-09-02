@@ -240,7 +240,7 @@ def androidCheck(request):
     del ap['res']
     if  isinstance(ap,HttpResponse):
         return getResult(False,ap.content,None)
-    result=v(ap,False)
+    result=v(ap,True)
     return getResult(result.get('success'),result.get('msg',{}).get('desc',u''),result)
 
 @client_login_required
