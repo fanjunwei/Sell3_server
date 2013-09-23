@@ -298,6 +298,27 @@ Connection: Keep-Alive
 <versionName>1.0</versionName>
 <clientType>01</clientType>
 </ns:checkTelphone></SOAP-ENV:Body></SOAP-ENV:Envelope>
+
+POST / HTTP/1.1
+Accept-Encoding: gzip
+User-Agent: Google-HTTP-Java-Client/1.15.0-rc (gzip)
+Content-Length: 805
+Host: 123.125.96.6:8090
+Connection: Keep-Alive
+
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xmlns:xsd="http://www.w3.org/2001/XMLSchema"xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"xmlns:ns="urn:SmsWBS">
+<SOAP-ENV:Body>
+<ns:uploadCertificateInfo>
+<deviceID>0000000000000000</deviceID>
+<communicaID>000C</communicaID>
+<agentId>AA3C9309459562D9E04C47F38CAC04A6</agentId>
+<telplone>2741AD34F808F19859F6D3F314651C66</telplone>
+<certificateName>5E22BCEA426CEC30</certificateName>
+<certificateType>8D1B6F7327986F7F</certificateType>
+<certificateNum>8E52943D267AC851D05BB094B9FD8FD5DF3C91FB895D270C</certificateNum>
+<certificateAdd>BB28AD9FDC3EB802BB28AD9FDC3EB802</certificateAdd>
+<clientType>01</clientType>
+</ns:uploadCertificateInfo></SOAP-ENV:Body></SOAP-ENV:Envelope>
 '''
 
 import subprocess
