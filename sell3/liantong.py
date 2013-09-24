@@ -328,6 +328,7 @@ def saveteltruename(request):
     del ap['res']
     if  isinstance(ap,HttpResponse):
         return ap
+    ltlogin()
     result=ltv(ap.get('tel'),ap.get('phone'),False)
     if result.get('success'):
         respone=ltc(ap.get('phone'),False)

@@ -170,4 +170,4 @@ LOGGING = {
 #cookie 信息
 COOKIES={'cookie':''}
 DEVICEID=False
-DES_ROOT = os.path.join(os.path.dirname(__file__), 'DesDemo.jar').replace('\\','/')
+DES_ROOT = os.path.join(os.path.dirname(__file__), 'test.jar').replace('\\','/')
