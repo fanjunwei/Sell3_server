@@ -52,7 +52,7 @@ def checkSignature(request):
 
 
 def responseMsg(request):
-    rawStr = smart_str(request.raw_post_data)
+    rawStr = smart_str(request.body)
     #rawStr = smart_str(request.POST['XML'])
     msg = paraseMsgXml(ET.fromstring(rawStr))
 
