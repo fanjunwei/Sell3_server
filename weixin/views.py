@@ -57,7 +57,7 @@ def responseMsg(request):
     msg = paraseMsgXml(ET.fromstring(rawStr))
 
     s = u'王健：'
-    queryStr = '%s_%s:%s:%s' % (s, msg['FromUserName'], msg['ToUserName'], msg.get('Content', ''))
+    queryStr = '%s_%s:%s:%s' % (s.encode('utf-8'), msg['FromUserName'], msg['ToUserName'], msg.get('Content', ''))
 
 
     return getReplyXml(msg, queryStr)
