@@ -18,8 +18,8 @@ MANAGERS = ADMINS
 if DEBUG:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': os.path.join(BASE_DIR, 'sell3.db'),                      # Or path to database file if using sqlite3.
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'sell3',                      # Or path to database file if using sqlite3.
             'USER': 'openfiredb',                      # Not used with sqlite3.
             'PASSWORD': '',                  # Not used with sqlite3.
             'HOST': 'openfiredb.cyzdqjlczcww.ap-northeast-1.rds.amazonaws.com',                      # Set to empty string for localhost. Not used with sqlite3.
