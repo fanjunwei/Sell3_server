@@ -5,6 +5,7 @@
 __author__ = u'王健'
 
 
-USERNAMES='u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV'
+# USERNAMES='u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV'
+USERNAMES='u=Nsi4IrCROmbYPLrnKqtyqErzyWmPVk&p=7dszIetwFCU_lTB78cxHHktz60Rrud'
 
 LTKEY='qwertyui'

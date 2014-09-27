@@ -328,7 +328,6 @@ def saveteltruename(request):
     del ap['res']
     if  isinstance(ap,HttpResponse):
         return ap
-    ltlogin()
     result=ltv(ap.get('tel'),ap.get('phone'),False)
     if result.get('success'):
         respone=ltc(ap.get('phone'),False)
@@ -351,7 +350,7 @@ def ltsave(ap,flag=False):
     tel=getpwd(ap.get('phone'),LTKEY)
     request = urllib2.Request('http://123.125.96.6:8090',' ')
     try:
-        response = urllib2.urlopen(request,ltuploadstr.replace('\n','')%(tel,name,number,address))
+        response = urllib2.urlopen(request,ltuploadstr.replace('\n','')%(tel,name,number,address),20)
         result= response.read()
         tradeState_start=result.find('tradeState')
         tradeState_end=result.rfind('tradeState')

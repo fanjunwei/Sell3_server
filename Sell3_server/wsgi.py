@@ -13,8 +13,8 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os
-
+import os, sys
+sys.path.append('/home/ubuntu/Sell3_server')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Sell3_server.settings")
 
 # This application object is used by any WSGI server configured to use this
