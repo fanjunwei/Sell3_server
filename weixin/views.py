@@ -1,7 +1,8 @@
 # coding=utf-8
 # Date:2014/9/24
 #Email:wangjian2254@gmail.com
-from sell3.models import Person
+from django.contrib.auth.models import User
+from sell3.models import Person, Msg
 
 __author__ = u'王健'
 
@@ -58,23 +59,29 @@ def responseMsg(request):
     #rawStr = smart_str(request.POST['XML'])
     msg = paraseMsgXml(ET.fromstring(rawStr))
     msgtype = msg.get('MsgType')
-
-
+    content = msg.get('Content', '')
+    picurl = msg.get('PicUrl ', '')
+    fuid = msg['FromUserName']
+    result_msg = u''
+    reg, person = isReg(fuid)
+    if not reg :
+        m = Msg()
+        m.msg = content
+        m.imageurl = picurl
+        m.user = person.user
+        m.save()
+        result_msg = u'您的账号尚未被授权实名制，需要等待管理员审批。请您留言表明您的身份，方便管理员授权管理'
     if msgtype == 'event':
-        pass
+        eventMsg(msg)
     else:
-        if not isReg(msg['FromUserName']):
-            return getReplyXml(msg, '您需要先注册您的账户，才能进行实名认证。请输入您的：员工ID')
-        elif msgtype == 'text':
+        if msgtype == 'text':
             pass
         elif msgtype == 'image':
             pass
 
-    s = u'王健：'
-    queryStr = '%s_%s:%s:%s' % (s.encode('utf-8'), msg['FromUserName'], msg['ToUserName'], msg.get('Content', ''))
 
 
-    return getReplyXml(msg, queryStr)
+    return getReplyXml(msg, result_msg.encode('utf-8'))
 
 
 def paraseMsgXml(rootElem):
@@ -105,8 +112,16 @@ def eventMsg(msg):
         pass
 
 def isReg(weixinid):
-
-    if Person.objects.filter(weixinid=weixinid).exists():
-        return True
+    person, c = Person.objects.get_or_create(weixinid=weixinid)
+    if not c and person.user.is_active:
+        return True, person
+    elif c:
+        user = User()
+        user.username = weixinid
+        user.is_active = False
+        user.save()
+        person.user = user
+        person.save()
+        return False, person
     else:
-        return False
+        return False, person

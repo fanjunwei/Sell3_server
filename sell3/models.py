@@ -4,6 +4,10 @@ from django.db import models
 from datetime import datetime
 
 # Create your models here.
+class Msg(models.Model):
+    user = models.ForeignKey(User)
+    msg = models.TextField(verbose_name=u'聊天内容')
+    imageurl = models.URLField(verbose_name=u'图片url')
 
 class Person(models.Model):
     user = models.OneToOneField(User)

@@ -8,6 +8,7 @@ from django.conf.urls import patterns
 from sell3.liantong import saveteltruename, ltcheckteltruename
 from sell3.views import top, menu, welcome, clientLogin, teltruename, checkteltruename, getExcelPage, uploadExcel, androidCheck, androidSave, autoSaveTel, downloadTrue, reUpload
 from sell3.views_user import check_username, userAdd, userSave, userDelete, userOpen, userPassword, userDeviceid, userList, userListPage, userPWD, userPWD_get
+from sell3.weixin import user_weixin_page, user_weixin_list_page
 
 
 urlpatterns = patterns('^oa/$',
@@ -34,6 +35,11 @@ urlpatterns = patterns('^oa/$',
                         (r'^userListPage/$',userListPage),
                         (r'^userPWD/$',userPWD),
                         (r'^userPWD_get/$',userPWD_get),
+
+
+                        (r'^user_weixin_page/$',user_weixin_page),
+                        (r'^user_weixin_list_page/$',user_weixin_list_page),
+
 
 
                         (r'^autoSaveTel/$',autoSaveTel),
