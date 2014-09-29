@@ -71,13 +71,14 @@ def responseMsg(request):
         m.user = person.user
         m.save()
         result_msg = u'您的账号尚未被授权实名制，需要等待管理员审批。请您留言表明您的身份，方便管理员授权管理'
-    if msgtype == 'event':
-        eventMsg(msg)
     else:
-        if msgtype == 'text':
-            pass
-        elif msgtype == 'image':
-            pass
+        if msgtype == 'event':
+            eventMsg(msg)
+        else:
+            if msgtype == 'text':
+                pass
+            elif msgtype == 'image':
+                pass
 
 
 
@@ -112,16 +113,19 @@ def eventMsg(msg):
         pass
 
 def isReg(weixinid):
-    person, c = Person.objects.get_or_create(weixinid=weixinid)
-    if not c and person.user.is_active:
-        return True, person
-    elif c:
+    if not Person.objects.filter(weixinid=weixinid).exists():
+        person = Person()
         user = User()
         user.username = weixinid
         user.is_active = False
         user.save()
         person.user = user
+        person.weixinid = weixinid
         person.save()
         return False, person
     else:
-        return False, person
+        person = Person.objects.get(weixinid=weixinid)
+        if person.user.is_active:
+            return True, person
+        else:
+            return False, person

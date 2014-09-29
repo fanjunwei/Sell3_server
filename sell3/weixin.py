@@ -20,7 +20,7 @@ def user_weixin_page(request):
 @login_required
 @permission_required
 def user_weixin_list_page(request):
-    userquery = User.objects.exclude(person__weixinid=None).filter(is_active=False)
+    userquery = User.objects.filter(is_active=False).exclude(person__weixinid=None)
 
     return render_to_response('oa/userWeiXinListPage.html', RequestContext(request, {'userlist': userquery}))
 
