@@ -64,7 +64,7 @@ def responseMsg(request):
     fuid = msg['FromUserName']
     result_msg = u''
     reg, person = isReg(fuid)
-    if not reg :
+    if not reg:
         m = Msg()
         m.msg = content
         m.imageurl = picurl
