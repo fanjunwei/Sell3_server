@@ -61,6 +61,7 @@ def responseMsg(request):
     msgtype = msg.get('MsgType')
     content = msg.get('Content', '')
     picurl = msg.get('PicUrl ', '')
+    mediaid = msg.get('MediaId ', '')
     fuid = msg['FromUserName']
     result_msg = u''
     reg, person = isReg(fuid)
@@ -71,7 +72,7 @@ def responseMsg(request):
         m.user = person.user
         m.save()
         # result_msg = u'您的账号尚未被授权实名制，需要等待管理员审批。请您留言表明您的身份，方便管理员授权管理:%s:%s_%s'%(content.decode('utf-8'), picurl,request.body.decode('utf-8'))
-        result_msg = u'%s:%s'%(msgtype,picurl)
+        result_msg = u'%s:%s:%s'%(msgtype,picurl,mediaid)
     else:
         if msgtype == 'event':
             eventMsg(msg)
