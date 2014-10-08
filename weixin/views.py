@@ -2,7 +2,8 @@
 # Date:2014/9/24
 #Email:wangjian2254@gmail.com
 from django.contrib.auth.models import User
-from sell3.models import Person, Msg
+from Sell3_server.settings import MEDIA_ROOT
+from sell3.models import Person, Msg, Truename
 
 __author__ = u'王健'
 
@@ -75,10 +76,50 @@ def responseMsg(request):
         if msgtype == 'event':
             eventMsg(msg)
         else:
+
+            truename, created = Truename.objects.get_or_create(weixin=True, user=person.user)
             if msgtype == 'text':
-                pass
+                try:
+                    tel = int(content)
+                    truename.tel = tel
+                    truename.save()
+                except:
+                    if truename.idstatus == 1:
+                        downloadIDimage(picurl, truename.id)
+                        shibie(truename.id)
+                    elif truename.idstatus == 2:
+                        shibie(truename.id)
+                    pass
+
             elif msgtype == 'image':
-                pass
+                if truename.idimg == picurl:
+                    if truename.idstatus == 1:
+                        downloadIDimage(picurl, truename.id)
+                        shibie(truename.id)
+                    elif truename.idstatus == 2:
+                        shibie(truename.id)
+                else:
+                    truename.idimg = picurl
+                    truename.imgfile.delete()
+                    truename.idstatus = 1
+                    truename.save()
+                    downloadIDimage(picurl, truename.id)
+                    shibie(truename.id)
+            truename = Truename.objects.get(pk=truename.id)
+            result_msg = u'手机号实名认证\n'
+            if truename.tel:
+                result_msg += u'手机号：%s\n'% truename.tel
+            else:
+                result_msg += u'手机号尚未提供！\n'
+            if truename.idstatus == 0:
+                result_msg += u'身份证尚未拍照上传！\n'
+            elif truename.idstatus in [1, 2, 3]:
+                result_msg += u'身份证正在识别！(%s)\n'%truename.idstatus
+            elif truename.idstatus == 4:
+                result_msg += u'姓名:%s\n身份证号:%s\n地址:%s\n' % (truename.name, truename.number, truename.address)
+            result_msg += u'（发送任意文字，显示实名进度！）\n'
+            if picurl:
+                return getReplyXmlImg(msg, result_msg.encode('utf-8'), picurl)
 
 
 
@@ -96,6 +137,24 @@ def paraseMsgXml(rootElem):
 def getReplyXml(msg, replyContent):
     extTpl = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[%s]]></MsgType><Content><![CDATA[%s]]></Content><FuncFlag>0</FuncFlag></xml>";
     extTpl = extTpl % (msg['FromUserName'], msg['ToUserName'], str(int(time.time())), 'text', replyContent)
+    return extTpl
+
+def getReplyXmlImg(msg, replyContent,url):
+    extTpl='''<xml>
+<ToUserName><![CDATA[%s]]></ToUserName>
+<FromUserName><![CDATA[%s]]></FromUserName>
+<CreateTime>%s</CreateTime>
+<MsgType><![CDATA[news]]></MsgType>
+<ArticleCount>1</ArticleCount>
+<Articles>
+<item>
+<Title><![CDATA[手机号实名]]></Title>
+<Description><![CDATA[%s]]></Description>
+<PicUrl><![CDATA[%s]]></PicUrl>
+</item>
+</Articles>
+</xml> '''
+    extTpl = extTpl % (msg['FromUserName'], msg['ToUserName'], str(int(time.time())), replyContent, url)
     return extTpl
 
 def eventMsg(msg):
@@ -129,3 +188,32 @@ def isReg(weixinid):
             return True, person
         else:
             return False, person
+
+
+def downloadIDimage(url, trueid):
+    import os,uuid
+    try:
+        f = urllib2.urlopen(url)
+        data = f.read()
+        filename = str(uuid.uuid4())
+        with open("%s/%s" % (os.path.join(MEDIA_ROOT, "idimg"), filename), "wb") as code:
+            code.write(data)
+        truename = Truename.objects.get(pk=trueid)
+        if truename.idstatus < 2:
+            truename.imgfile = '%s/%s'%('idimg', filename)
+            truename.idstatus = 2
+            truename.save()
+        return True
+    except Exception,e:
+        return False
+
+
+def shibie(trueid):
+    truename = Truename.objects.get(pk=trueid)
+    if truename.idstatus == 2:
+        truename.idstatus = 3
+        truename.save()
+
+        truename.idstatus = 4
+        truename.save()
+    pass
