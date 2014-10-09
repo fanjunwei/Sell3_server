@@ -97,6 +97,8 @@ def responseMsg(request):
 
             elif msgtype == 'image':
                 if truename.idimg == picurl:
+                    truename.idstatus = 1
+                    truename.save()
                     if truename.idstatus == 1:
                         downloadIDimage(picurl, truename.id)
                         shibie(truename.id)
@@ -155,6 +157,7 @@ def getReplyXmlImg(msg, replyContent,url):
 <Title><![CDATA[手机号实名]]></Title>
 <Description><![CDATA[%s]]></Description>
 <PicUrl><![CDATA[%s]]></PicUrl>
+<Url><![CDATA[]]></Url>
 </item>
 </Articles>
 </xml> '''
