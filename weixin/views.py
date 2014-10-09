@@ -89,7 +89,7 @@ def responseMsg(request):
                     truename.save()
                 except:
                     if truename.idstatus == 1:
-                        downloadIDimage(picurl, truename.id)
+                        downloadIDimage(truename.idimg, truename.id)
                         shibie(truename.id)
                     elif truename.idstatus == 2:
                         shibie(truename.id)
