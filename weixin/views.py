@@ -1,6 +1,8 @@
 # coding=utf-8
 # Date:2014/9/24
 #Email:wangjian2254@gmail.com
+import httplib
+import json, base64
 from django.contrib.auth.models import User
 from Sell3_server.settings import MEDIA_ROOT
 from sell3.models import Person, Msg, Truename
@@ -16,6 +18,8 @@ import xml.etree.ElementTree as ET
 import urllib, urllib2, time, hashlib
 
 TOKEN = "pibgrj1409810714"
+
+HANWANG_KEY = '3b1c7302-4d31-4c56-b034-94b48e59dd5d'
 
 YOUDAO_KEY = '你申请到的有道的Key'
 YOUDAO_KEY_FROM = "有道的key-from"
@@ -117,11 +121,11 @@ def responseMsg(request):
                 result_msg += u'身份证正在识别！(%s)\n'%truename.idstatus
             elif truename.idstatus == 4:
                 result_msg += u'姓名:%s\n身份证号:%s\n地址:%s\n' % (truename.name, truename.number, truename.address)
+            elif truename.idstatus == 5:
+                result_msg += u'身份证图片识别失败，请重新拍照'
             result_msg += u'（发送任意文字，显示实名进度！）\n'
             if picurl:
                 return getReplyXmlImg(msg, result_msg.encode('utf-8'), picurl)
-
-
 
     return getReplyXml(msg, result_msg.encode('utf-8'))
 
@@ -213,7 +217,24 @@ def shibie(trueid):
     if truename.idstatus == 2:
         truename.idstatus = 3
         truename.save()
+        param = {'uid': '', 'lang': '', 'color': '', 'image': ''}
 
-        truename.idstatus = 4
-        truename.save()
-    pass
+
+        data = open(truename.imgfile.path, 'rb').read()
+        param['image'] = base64.encodestring(data)
+        req = urllib2.Request("http://api.hanvon.com/rt/ws/v1/ocr/idcard/recg?key=%s&code=8d497db3-7341-4f1f-875a-2f5444884515" % HANWANG_KEY)
+        req.add_header('Content-Type', 'application/octet-stream')
+        connection = httplib.HTTPConnection(req.get_host())
+        connection.request('POST', req.get_selector(), json.dumps(param))
+        response = connection.getresponse()
+
+        result = json.loads(response.read())
+        if result.get('code', '') == '0':
+            truename.name = result.get('name')
+            truename.number = result.get('idnumber')
+            truename.address = result.get('address')
+            truename.idstatus = 4
+            truename.save()
+        else:
+            truename.idstatus = 5
+            truename.save()
