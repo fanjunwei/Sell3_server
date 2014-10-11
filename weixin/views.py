@@ -103,8 +103,8 @@ def responseMsg(request):
 
             elif msgtype == 'image':
                 if truename.idimg == picurl:
-                    truename.idstatus = 1
-                    truename.save()
+                    # truename.idstatus = 1
+                    # truename.save()
                     if truename.idstatus == 1:
                         downloadIDimage(picurl, truename.id)
                         shibie2(truename.id)
