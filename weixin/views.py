@@ -221,7 +221,7 @@ def downloadIDimage(url, trueid):
         return False
 
 
-def shibie2(trueid):
+def shibie(trueid):
     truename = Truename.objects.get(pk=trueid)
     if truename.idstatus == 2:
         truename.idstatus = 3
@@ -248,7 +248,7 @@ def shibie2(trueid):
             truename.idstatus = 5
             truename.save()
 
-def shibie21(trueid):
+def shibie2(trueid):
     truename = Truename.objects.get(pk=trueid)
     if truename.idstatus == 2:
         truename.idstatus = 3
