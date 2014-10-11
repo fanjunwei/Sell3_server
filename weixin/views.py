@@ -3,6 +3,8 @@
 #Email:wangjian2254@gmail.com
 import httplib
 import json, base64
+import uuid
+import datetime
 from django.contrib.auth.models import User
 from Sell3_server.settings import MEDIA_ROOT
 from sell3.models import Person, Msg, Truename
@@ -24,6 +26,10 @@ HANWANG_KEY = '3b1c7302-4d31-4c56-b034-94b48e59dd5d'
 YOUDAO_KEY = '你申请到的有道的Key'
 YOUDAO_KEY_FROM = "有道的key-from"
 YOUDAO_DOC_TYPE = "xml"
+
+YUNMAI_USERNAME = 'test141001'
+YUNMAI_PASSWORD = 'asdg23sdgsuUILo878sdsdf'
+YUNMAI_URL = 'http://eng.ccyunmai.com:5008/SrvEngine'
 
 
 def handleRequest(request):
@@ -90,9 +96,9 @@ def responseMsg(request):
                 except:
                     if truename.idstatus == 1:
                         downloadIDimage(truename.idimg, truename.id)
-                        shibie(truename.id)
+                        shibie2(truename.id)
                     elif truename.idstatus == 2:
-                        shibie(truename.id)
+                        shibie2(truename.id)
                     pass
 
             elif msgtype == 'image':
@@ -101,16 +107,16 @@ def responseMsg(request):
                     truename.save()
                     if truename.idstatus == 1:
                         downloadIDimage(picurl, truename.id)
-                        shibie(truename.id)
+                        shibie2(truename.id)
                     elif truename.idstatus == 2:
-                        shibie(truename.id)
+                        shibie2(truename.id)
                 else:
                     truename.idimg = picurl
                     truename.imgfile.delete()
                     truename.idstatus = 1
                     truename.save()
                     downloadIDimage(picurl, truename.id)
-                    shibie(truename.id)
+                    shibie2(truename.id)
             truename = Truename.objects.get(pk=truename.id)
             result_msg = u'手机号实名认证\n'
             if truename.tel:
@@ -241,3 +247,55 @@ def shibie(trueid):
         else:
             truename.idstatus = 5
             truename.save()
+
+def shibie2(trueid):
+    truename = Truename.objects.get(pk=trueid)
+    if truename.idstatus == 2:
+        truename.idstatus = 3
+        truename.save()
+        extTpl='''<xml>
+<action>idcard</action>
+<client>%s</client>
+<system>windows</system>
+<key>%s</key>
+<time>%s</time>
+<verify>%s</verify>
+<file>%s</file>
+<ext>jpg</ext>
+</xml> '''
+        # MD5(action+client+key+time+%password%)
+
+        key = str(uuid.uuid4())
+        timeline = str(int(time.time()*1000))
+        v = hashlib.md5('%s%s%s%s%s' % ('idcard', YUNMAI_USERNAME, key, timeline, YUNMAI_PASSWORD)).hexdigest().upper()
+        extTpl = extTpl % (YUNMAI_USERNAME, key, timeline, v, open(truename.imgfile.path, 'rb').read())
+        req = urllib2.Request(YUNMAI_URL)
+        req.add_header('Content-Type', 'application/octet-stream')
+        connection = httplib.HTTPConnection(req.get_host())
+        connection.request('POST', req.get_selector(), extTpl)
+        response = connection.getresponse()
+
+        result = response.read()
+        msg = paraseResultXml(ET.fromstring('<xml>%s</xml>'%result))
+        if msg.get('result', '') == '1':
+            truename.name = msg.get('name')
+            truename.number = msg.get('cardno')
+            truename.address = msg.get('address')
+            truename.idstatus = 4
+            truename.save()
+        else:
+            truename.idstatus = 5
+            truename.save()
+
+
+def paraseResultXml(rootElem):
+    msg = {}
+    if rootElem.tag == 'xml':
+        for child in rootElem:
+            if child.text:
+                msg[child.tag] = smart_str(child.text)
+            else:
+                for c in child:
+                    msg[c.tag] = smart_str(c.text)
+
+    return msg
