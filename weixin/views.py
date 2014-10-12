@@ -73,7 +73,8 @@ def responseMsg(request):
     content = msg.get('Content', '')
     picurl = msg.get('PicUrl', '')
     fuid = msg['FromUserName']
-    result_msg = u''
+    result_msg = u'test'
+    return getReplyXml(msg, result_msg.encode('utf-8'))
     reg, person = isReg(fuid)
     if not reg:
         m = Msg()
