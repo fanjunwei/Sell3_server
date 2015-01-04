@@ -17,6 +17,11 @@ from sell3.models import Truename
 from sell3.tools import getResult, client_login_required
 from django.contrib.auth import login as auth_login
 from sell3.usernames import USERNAMES, LTKEY
+from shiming_api import Shiming
+
+username = "BJ040_01"
+password = "pass010203"
+shiming = Shiming(username, password)
 
 
 @login_required
@@ -68,6 +73,7 @@ def clientLogin(request):
             return getResult(False, u'用户名密码错误')
 
 
+'''
 def v(ap, flag=False):
     data = urllib.urlencode(ap)
     request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/identity/verifyIdentity', data)
@@ -180,6 +186,7 @@ def loginS():
     #             if not result.get('success'):
     #                 return result
     # ap={'phone':dm['phone'],'name':dm['name'],'number':dm['number']}
+'''
 
 
 def getParam(request):
@@ -206,18 +213,23 @@ def teltruename(request):
     del ap['res']
     if isinstance(ap, HttpResponse):
         return ap
-    result = v(ap, False)
-    if not result.get('success'):
-        return HttpResponse(res + result.get('msg', {}).get('desc', u''))
+    success = shiming.verifyIdentity(**ap)
+    if not success:
+        return HttpResponse(res + shiming.getLastError())
     else:
-        r = save(ap)
-        return HttpResponse(res + r.get('msg', {}).get('desc'))
+        success = shiming.saveIdentity(**ap)
+        if success:
+            message = u"实名制认证成功"
+
+        else:
+            message = shiming.getLastError()
+        return HttpResponse(res + message)
 
 
         # if not r.get('success'):
-        #     return r.get('msg',{}).get('desc')
+        # return r.get('msg',{}).get('desc')
         # else:
-        #     return
+        # return
 
 
 def checkteltruename(request):
@@ -226,13 +238,17 @@ def checkteltruename(request):
     del ap['res']
     if isinstance(ap, HttpResponse):
         return ap
-    result = v(ap, False)
-    return HttpResponse(res + result.get('msg', {}).get('desc'))
+    success = shiming.verifyIdentity(**ap)
+    if success:
+        message = u"身份证号和姓名匹配"
+    else:
+        message = shiming.getLastError()
+    return HttpResponse(res + message)
     # if not result.get('success'):
-    #     return result.get('msg',{}).get('desc',u'')
+    # return result.get('msg',{}).get('desc',u'')
     # else:
-    #     r=save(ap)
-    #     return r.get('msg',{}).get('desc')
+    # r=save(ap)
+    # return r.get('msg',{}).get('desc')
 
 
 def saveteltruename(request):
@@ -241,8 +257,12 @@ def saveteltruename(request):
     del ap['res']
     if isinstance(ap, HttpResponse):
         return ap
-    r = save(ap)
-    return HttpResponse(res + r.get('msg', {}).get('desc'))
+    success = shiming.saveIdentity(**ap)
+    if success:
+        message = u'实名制认证成功'
+    else:
+        message = shiming.getLastError()
+    return HttpResponse(res + message)
 
 
 @client_login_required
@@ -251,8 +271,14 @@ def androidCheck(request):
     del ap['res']
     if isinstance(ap, HttpResponse):
         return getResult(False, ap.content, None)
-    result = v(ap, True)
-    return getResult(result.get('success'), result.get('msg', {}).get('desc', u''), result)
+    success = shiming.verifyIdentity(**ap)
+    if success:
+        message = u'身份证号和姓名匹配'
+        result = {'success': True, 'msg': {"desc": u'身份证号和姓名匹配'}, 'photo': shiming.getPhoto()}
+    else:
+        message = shiming.getLastError()
+        result = {}
+    return getResult(success, message, result)
 
 
 @client_login_required
@@ -261,8 +287,13 @@ def androidSave(request):
     del ap['res']
     if isinstance(ap, HttpResponse):
         return getResult(False, ap.content, None)
-    result = save(ap, request.user)
-    return getResult(result.get('success'), result.get('msg', {}).get('desc', u''), result)
+    success = shiming.saveIdentity(user=request.user, **ap)
+    if success:
+        message = u'实名制认证成功'
+    else:
+        message = shiming.getLastError()
+
+    return getResult(success, message, shiming.getLastResult())
 
 
 @login_required
@@ -333,14 +364,14 @@ def autoSaveTel(request):
         if 'yidong' == o.company:
             ap = {'phone': o.tel, 'name': o.name.encode('utf-8'), 'number': o.number,
                   'address': o.address.encode('utf-8')}
-            r = v(ap, False)
-            if r.get('success'):
-                r = save(ap, request.user, o)
-            if r.get('success'):
+            success = shiming.verifyIdentity(**ap)
+            if success:
+                success = shiming.saveIdentity(user=request.user, o=o, **ap)
+            if success:
                 o.status = 1
             else:
                 o.status = 2
-                o.help = r.get('msg', {}).get('desc', u'')
+                o.help = shiming.getLastError()
             o.save()
             num += 1
     return render_to_response('oa/truename.html', RequestContext(request,
