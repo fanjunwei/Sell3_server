@@ -11,10 +11,10 @@ from weixin.views import handleRequest
 
 
 admin.autodiscover()
-
 urlpatterns = patterns('',
                        # Examples:
                        url(r'^$', default),
+                       url(r'^SrvTimeChk', 'weixin.weixintest.yunmai'),
                        url(r'^main$', default2),
                        url(r'^oa/', include('sell3.urls')),
                        url(r'^shimingweixin/', handleRequest),

@@ -48,6 +48,8 @@ class SimpleTest(TestCase):
 # print result2  # will be 'to be encrypted'
 # decrypted = unpad(cipher.decrypt(result2))
 # print decrypted  # will be 'to be encrypted'
+# p:Nsi4IrCROmbYPLrnKqtyqErzyWmPVk
+# w:7dszIetwFCU_lTB78cxHHktz60Rrud
 
 def v(data):
     request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/identity/verifyIdentity',data)
@@ -82,8 +84,10 @@ def save(data):
 
 
 def loginS():
-    request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/sys/login?u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV')
-    # data = urllib.urlencode({"u":"nSI_iRcroMByplRNkQvKQERZyytPmW", "p":"B%40WDCCCTT7wKNW5XlvV1slp38YmuCV"})
+    data = json.dumps({"u":"Nsi4IrCROmbYPLrnKqtyqErzyWmPVk", "p":"7dszIetwFCU_lTB78cxHHktz60Rrud"})
+    request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/sys/login',data)
+    # request = urllib2.Request('http://channel.bj.chinamobile.com/channelApp/sys/login?u=nSI_iRcroMByplRNkQvKQERZyytPmW&p=B%40WDCCCTT7wKNW5XlvV1slp38YmuCV')
+
     response = urllib2.urlopen(request)
     print response.read()
     cookies = response.headers["Set-cookie"]
@@ -113,7 +117,7 @@ def tellogin():
         print data2
         save(data2)
 
-# tellogin()
+tellogin()
 def urlparm():
     s='birth=19871022&ethnic=&phone=18801191987&address=%E5%A4%A9%E6%B4%A5&name=%E7%8E%8B%E4%BC%9F&gender=0&number=152822198710226315&cred_type=0'
     pl=s.split('&')
